@@ -18,8 +18,8 @@ tags: ["cifar", "vit"]
 seed: 12345
 
 trainer:
-  min_epochs: 2
-  max_epochs: 2
+  min_epochs: 25
+  max_epochs: 25
   gradient_clip_val: 0.5
 
 model:
@@ -29,5 +29,5 @@ model:
     output_size: 10
 
 datamodule:
-  batch_size: 128
-  num_workers: 4
+  batch_size: 512
+  num_workers: 16
