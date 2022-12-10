@@ -5,6 +5,8 @@ from pytorch_lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric
 from torchmetrics.classification.accuracy import Accuracy
 
+from pytorch_lightning.utilities import rank_zero_only
+
 class CIFARLitModule(LightningModule):
     """Example of LightningModule for CIFAR10 classification.
 
@@ -100,6 +102,7 @@ class CIFARLitModule(LightningModule):
         # otherwise metric would be reset by lightning after each epoch
         self.log("val/acc_best", self.val_acc_best.compute(), prog_bar=True, sync_dist=True)
 
+    @rank_zero_only
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.step(batch)
 
@@ -111,6 +114,7 @@ class CIFARLitModule(LightningModule):
 
         return {"loss": loss, "preds": preds, "targets": targets}
 
+    @rank_zero_only
     def test_epoch_end(self, outputs: List[Any]):
         pass
 
