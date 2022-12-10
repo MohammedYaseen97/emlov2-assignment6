@@ -97,7 +97,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     # if int(os.environ.get('LOCAL_RANK', 0) == 0 and os.environ.get('NODE_RANK', 0):
     train_metrics = trainer.callback_metrics
 
-    if int(os.environ.get('LOCAL_RANK', 0) == 0 and os.environ.get('NODE_RANK', 0):
+    if int(os.environ.get('LOCAL_RANK', 0)) == 0 and int(os.environ.get('NODE_RANK', 0)) == 0:
         if cfg.get("test"):
             log.info("Starting testing!")
             ckpt_path = trainer.checkpoint_callback.best_model_path
