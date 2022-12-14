@@ -113,7 +113,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     # merge train and test metrics
 #     metric_dict = {**train_metrics, **test_metrics}
-    metric_dict = {train_metrics}
+    metric_dict = {**train_metrics}
 
     return metric_dict, object_dict
 
