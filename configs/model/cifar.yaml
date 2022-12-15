@@ -9,4 +9,5 @@ optimizer:
 net:
   _target_: src.models.components.timm_net.TimmNet
   model_name: 'densenet121'
+  image_size: 224
   output_size: 10
