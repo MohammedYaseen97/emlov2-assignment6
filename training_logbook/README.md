@@ -11,11 +11,17 @@ Highest batch size: 8192
 
 S3 URI for best checkpoint: s3://emlov2-s3-yaseen/assignment6/ddp_bs8192.ckpt
 
+Training time: 1944.99 s
+
 Train acc: 0.948
 
 Best val acc: 0.689
 
 Test acc: 0.694
+
+Experiment folders:
+ - Train : https://tensorboard.dev/experiment/xuxLlEYnSr6MZXSDKUKaEQ/
+ - Test : https://tensorboard.dev/experiment/vGqgltrJTBGpbgg5UgF2xw/
 
 GPU Usage:
 ```
@@ -52,11 +58,17 @@ Highest batch size: 16384
 
 S3 URI for best checkpoint: s3://emlov2-s3-yaseen/assignment6/fsdp_bs16384.ckpt
 
+Training time: 128.45 s
+
 Train acc: 0.252
 
 Best val acc: 0.252
 
 Test acc: 0.259
+
+Experiment folders:
+ - Train : https://tensorboard.dev/experiment/D6Qw3IBdQ6ahwyZf9xVRSA/
+ - Test : https://tensorboard.dev/experiment/3mDiesZ8SgC1pt4YNI62VQ/
 
 GPU Usage:
 ```
