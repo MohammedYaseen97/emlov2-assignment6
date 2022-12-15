@@ -7,6 +7,8 @@ from torchmetrics.classification.accuracy import Accuracy
 
 from pytorch_lightning.utilities import rank_zero_only
 
+from fairscale.nn import checkpoint_wrapper, auto_wrap, wrap
+
 class CIFARLitModule(LightningModule):
     """Example of LightningModule for CIFAR10 classification.
 
@@ -50,6 +52,9 @@ class CIFARLitModule(LightningModule):
 
         # for tracking best so far validation accuracy
         self.val_acc_best = MaxMetric()
+
+    def configure_sharded_model(self):
+        self.net = auto_wrap(self.net)
 
     def forward(self, x: torch.Tensor):
         return self.net(x)
