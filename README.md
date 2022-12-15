@@ -1,6 +1,6 @@
 <div align="center">
 
-# EMLO 2.0 Assignment 2
+# EMLO 2.0 Assignment 6
 
 <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>
 <a href="https://pytorchlightning.ai/"><img alt="Lightning" src="https://img.shields.io/badge/-Lightning-792ee5?logo=pytorchlightning&logoColor=white"></a>
@@ -13,7 +13,7 @@
 
 ## Description
 
-This project uses timm models to train and evaluate on MNIST and CIFAR10 datasets. Docker support has been added on top of it.
+This project trains timm models on multiple gpus existing over multiple nodes. This assignment involves using two strategies : DDP and FSDP for the task.
 
 ## How to run
 
@@ -21,8 +21,8 @@ Install dependencies
 
 ```bash
 # clone project
-git clone https://github.com/MohammedYaseen97/emlo-2.0-assignment-2
-cd emlo-2.0-assignment-2
+git clone https://github.com/MohammedYaseen97/emlov2-assignment6
+cd emlov2-assignment6
 
 # [OPTIONAL] create conda environment
 conda create -n myenv python=3.8
@@ -57,32 +57,33 @@ You can override any parameter from command line like this
 python src/train.py trainer.max_epochs=20 datamodule.batch_size=64
 ```
 
-## Docker Support
+## Multi GPU training
 
-Docker support has been added to the [Makefile](Makefile).
-
-To build the docker container, use:
+DDP strategy can be used as follows:
 
 ```bash
-make build
+MASTER_PORT=29500 MASTER_ADDR=172.31.47.183 WORLD_SIZE=4 NODE_RANK=0 python src/train.py trainer=ddp trainer.devices=1 trainer.num_nodes=4 experiment=cifar trainer.default_root_dir=$(date + %Y-%m-%d_%H-%M-%S) callbacks.model_checkpoint.dirpath=logs/train/runs datamodule.num_workers=8
 ```
-
-This build also exists on [dockerhub](hub.docker.com)
-
-To run the container in interactive mode, use:
+The extra nodes can be added as follows:
 
 ```bash
-docker run -it --volume `pwd`:/app ace47/emlo-2.0:session02 ubuntu bash
+MASTER_PORT=29500 MASTER_ADDR=172.31.47.183 WORLD_SIZE=4 NODE_RANK=1 python src/train.py trainer=ddp trainer.devices=1 trainer.num_nodes=4 experiment=cifar trainer.default_root_dir=$(date + %Y-%m-%d_%H-%M-%S) callbacks.model_checkpoint.dirpath=logs/train/runs datamodule.num_workers=8
 ```
 
-You can also just run the train and eval scripts:
+FSDP strategy can be used as follows:
 
 ```bash
-docker run --volume `pwd`:/app ace47/emlo-2.0:session02 python src/train.py
+MASTER_PORT=29500 MASTER_ADDR=172.31.47.183 WORLD_SIZE=2 NODE_RANK=0 python src/train.py trainer=fsdp trainer.devices=1 trainer.num_nodes=2 experiment=cifar trainer.default_root_dir=$(date + %Y-%m-%d_%H-%M-%S) callbacks.model_checkpoint.dirpath=logs/train/runs datamodule.num_workers=8 datamodule.batch_size=1024 trainer.max_epochs=5
 ```
+The extra nodes can be added as follows:
 
 ```bash
-docker run --volume `pwd`:/app ace47/emlo-2.0:session02 python src/eval.py ckpt_path=logs/train/runs/2022-09-12_15-47-43/checkpoints/epoch_001.ckpt
+MASTER_PORT=29500 MASTER_ADDR=172.31.47.183 WORLD_SIZE=2 NODE_RANK=1 python src/train.py trainer=fsdp trainer.devices=1 trainer.num_nodes=2 experiment=cifar trainer.default_root_dir=$(date + %Y-%m-%d_%H-%M-%S) callbacks.model_checkpoint.dirpath=logs/train/runs datamodule.num_workers=8 datamodule.batch_size=1024 trainer.max_epochs=5
 ```
 
-We mount the volume instead of copying all the files inside the docker while building so as to examine the system's performance inside docker with real time changes. 
+Note that you cannot perform testing over multiple devices. That needs to be done separately on the single node (because the model checkpoints are saved here), like below:
+
+
+```bash
+python src/eval.py trainer=gpu model.net.model_name=vit_base_patch32_224 model.net.image_size=32 trainer.default_root_dir=$(date + %Y-%m-%d_%H-%M-%S) trainer.max_epochs=2 datamodule.num_workers=8 ckpt_path=logs/train/runs/epoch_001.ckpt
+```
