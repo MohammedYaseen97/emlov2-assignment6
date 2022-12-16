@@ -5,7 +5,7 @@ pytorch-lightning==1.7.1
 torchmetrics==0.9.3
 timm==0.6.7
 pytorch-lightning-bolts>=0.3.2
-fairscale==0.4.12
+fairscale==0.4.13
 
 # --------- hydra --------- #
 hydra-core==1.2.0
